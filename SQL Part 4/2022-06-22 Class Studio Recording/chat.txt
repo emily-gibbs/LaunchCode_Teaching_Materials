@@ -1,0 +1,38 @@
+20:10:23	 From  Ronisha H : who can help Katy out?
+20:10:28	 From  Lizz Callahan : Not sure if my mic is working.
+20:10:42	 From  Ronisha H : can you put it in the chat @Lizz?
+20:10:46	 From  Lizz Callahan : Wildcard the comma?
+20:11:08	 From  Lizz Callahan : WHERE authors =  "%,%"
+20:11:30	 From  Ronisha H : thank you Lizz & Allison
+20:13:16	 From  Lizz Callahan : Maybe it's just an elegant solution.
+20:14:13	 From  Ronisha H : 🥳🥳
+20:14:24	 From  Lizz Callahan : The next one requires subqueries.
+20:15:25	 From  Katy Geppert (she/her/hers) : USE BooksDBSELECT authors, titleFROM booksWHERE authors LIKE '%,%'
+20:15:42	 From  Lizz Callahan : We need to get tag_id from tag_name in tags, then translate that to book id in book_tags, then put the title from the books based on goodreads_book_id.
+20:16:55	 From  Lizz Callahan : I think a nested subquery seems easiest.
+20:17:34	 From  Lizz Callahan : SELECT title
+20:17:36	 From  Lizz Callahan : FROM books
+20:17:46	 From  Lizz Callahan : WHERE best_book_id = ANY
+20:18:12	 From  Lizz Callahan : (SELECT goodreads_book_id
+20:18:19	 From  Lizz Callahan : FROM book_tags
+20:18:28	 From  Lizz Callahan : WHERE tag_id = ANY(
+20:18:38	 From  Lizz Callahan : SELECT tag_id
+20:18:43	 From  Lizz Callahan : FROM tags
+20:18:55	 From  Lizz Callahan : WHERE tag_name = 'meditation'))
+20:21:18	 From  Ronisha H : still here!
+20:21:20	 From  Lizz Callahan : Those look likely.
+20:21:28	 From  Lizz Callahan : Lots of spiritual, etc
+20:21:37	 From  Veenam Jain : Another one that we can use is Select book_id, title from books b where book_id in (elect bt.goodreads_book_id, t.tag_name from tags t, book_tags bt where tag_name like 'Meditation%' and t.tag_id = bt.tag_id)
+20:21:52	 From  Veenam Jain : USE BooksDB;Select book_id, title from books b where book_id in (Select bt.goodreads_book_id, t.tag_name from tags t, book_tags bt where tag_name like 'Meditation%' and t.tag_id = bt.tag_id)
+20:22:21	 From  Katy Geppert (she/her/hers) : USE BooksDBSELECT titleFROM booksWHERE best_book_id = ANY    (SELECT goodreads_book_id    FROM book_tags    WHERE tag_id = ANY(        SELECT tag_id        FROM tags        WHERE tag_name = 'meditation'))
+20:23:15	 From  Lizz Callahan : INTERSECT?
+20:23:43	 From  Tinuade(She/her/hers) : should that not be UNION?
+20:24:21	 From  Lizz Callahan : We want 2 different conditions met, so I think intersect serves us better here.
+20:24:39	 From  Tinuade(She/her/hers) : ok, thanks
+20:25:31	 From  Veenam Jain : SELECT title, original_title, average_rating from books b1 where average_rating > 4.2 and b1.title = (Select original_title from books b2             where b1.book_id = b2.book_id)
+20:27:18	 From  Lizz Callahan : Alternate option:
+20:27:23	 From  Lizz Callahan : SELECT original_title, title, average_ratingFROM booksWHERE average_rating > 4.2 INTERSECTSELECT original_title, title, average_ratingFROM booksWHERE original_title = titleORDER BY average_rating DESC
+20:27:35	 From  Lizz Callahan : Oh it has no null check
+20:28:09	 From  Katy Geppert (she/her/hers) : /*USE BooksDBSELECT average_rating, original_FROM booksWHERE average_rating >= 4.2 */USE BooksDBSELECT title, original_title, average_rating from books b1 where average_rating > 4.2 and b1.title = (Select original_title from books b2             where b1.book_id = b2.book_id)
+20:28:28	 From  jae : ProdigiousProgrammingPowers
+20:29:29	 From  SAI K : Emily we can't hear you
